@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- BYPASS HOTLINKING / IN-APP BROWSER TIKTOK -->
+    <meta name="referrer" content="no-referrer">
+    
+    <title>Dashboard Admin - Yana Affiliate</title>
+
+    <!-- SEO & METADATA -->
+    <meta name="description" content="Panel Admin Yana Affiliate untuk mengelola katalog produk, kategori, dan pengaturan brand.">
+    <meta name="author" content="Priyana Maulidin">
+
+    <!-- FAVICON (Dynamic SVG Data URI) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%23FE2C55%22/><text y=%22.9em%22 x=%2222%22 font-size=%2260%22 font-weight=%22bold%22 fill=%22white%22>Y</text></svg>">
+
+    <!-- GOOGLE FONTS: INTER -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- STYLESHEET ADMIN -->
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+    <!-- AUTH SECTION (FORM LOGIN ADMIN) -->
+    <section id="login-section" class="auth-wrapper">
+        <div class="auth-card">
+            <h2>Admin Login</h2>
+            <p class="auth-subtitle">Masuk untuk mengelola katalog Yana Affiliate</p>
+            
+            <div id="login-error" class="alert-box danger hidden"></div>
+
+            <form id="login-form" autocomplete="off">
+                <div class="form-group">
+                    <label for="admin-email">Email Admin</label>
+                    <input type="email" id="admin-email" placeholder="admin@domain.com" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" id="admin-password" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+                <button type="submit" id="login-btn" class="btn-primary">Masuk ke Dashboard</button>
+            </form>
+            <div class="auth-footer">
+                <a href="index.html">&larr; Kembali ke Katalog Utama</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- DASHBOARD SECTION (HANYA TAMPIL SETELAH LOGIN) -->
+    <div id="dashboard-section" class="dashboard-wrapper hidden">
+        <header class="admin-header">
+            <div class="header-left">
+                <h1>Panel Admin Yana Affiliate</h1>
+                <span id="user-email-display" class="user-badge">Admin</span>
+            </div>
+            <div class="header-right">
+                <a href="index.html" target="_blank" class="btn-outline">Lihat Website</a>
+                <button type="button" id="logout-btn" class="btn-danger">Keluar</button>
+            </div>
+        </header>
+
+        <main class="admin-main">
+            <!-- TOAST NOTIFICATION -->
+            <div id="toast-msg" class="toast hidden"></div>
+
+            <!-- TAB NAVIGATION -->
+            <nav class="admin-tabs" aria-label="Navigasi Admin">
+                <button type="button" class="tab-btn active" data-tab="tab-products">Kelola Produk</button>
+                <button type="button" class="tab-btn" data-tab="tab-categories">Kelola Kategori</button>
+                <button type="button" class="tab-btn" data-tab="tab-settings">Pengaturan Brand</button>
+            </nav>
+
+            <!-- TAB 1: KELOLA PRODUK -->
+            <section id="tab-products" class="tab-content active">
+                <div class="content-grid">
+                    
+                    <!-- FORM PRODUK -->
+                    <div class="card-box">
+                        <h3 id="product-form-title">Tambah Produk Baru</h3>
+                        <form id="product-form">
+                            <input type="hidden" id="prod-id">
+
+                            <div class="form-group">
+                                <label for="prod-name">Nama Produk *</label>
+                                <input type="text" id="prod-name" placeholder="Contoh: Charger 20W Fast Charging" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prod-price">Harga (Rp) *</label>
+                                    <input type="number" id="prod-price" min="0" placeholder="49000" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="prod-category">Kategori *</label>
+                                    <select id="prod-category" required>
+                                        <option value="">Pilih Kategori...</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="prod-affiliate">URL Affiliate (Shopee/TikTok/Tokopedia) *</label>
+                                <input type="url" id="prod-affiliate" placeholder="https://s.shopee.co.id/..." required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="prod-status">Status Tampil *</label>
+                                <select id="prod-status" required>
+                                    <option value="active">Active (Tampil di Publik)</option>
+                                    <option value="draft">Draft (Disembunyikan)</option>
+                                </select>
+                            </div>
+
+                            <!-- OPSI FOTO PRODUK (UPLOAD FILE / LINK EXTERNAL) -->
+                            <div class="form-group">
+                                <label for="prod-image-file">Upload Foto Produk *</label>
+                                <input type="file" id="prod-image-file" accept="image/*" class="form-control">
+                                <small class="help-text">Pilih foto dari galeri HP atau masukkan URL gambar di bawah.</small>
+                                
+                                <div style="margin-top: 8px;">
+                                    <label for="prod-image-url" style="font-size: 0.85rem;">Atau Tempelkan URL Gambar Direct:</label>
+                                    <input type="url" id="prod-image-url" placeholder="https://i.postimg.cc/..." required>
+                                </div>
+
+                                <div id="upload-status" class="help-text hidden" style="color: #fe2c55; font-weight: 500; margin-top: 5px;"></div>
+                                
+                                <div id="image-preview-container" class="preview-box hidden" style="margin-top: 10px;">
+                                    <img id="image-preview" src="" alt="Preview Foto Produk" referrerpolicy="no-referrer">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="prod-short-desc">Deskripsi Singkat</label>
+                                <input type="text" id="prod-short-desc" placeholder="Ringkasan 1 kalimat...">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="prod-desc">Deskripsi Lengkap</label>
+                                <textarea id="prod-desc" rows="3" placeholder="Detail spesifikasi produk..."></textarea>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" id="save-prod-btn" class="btn-primary">Simpan Produk</button>
+                                <button type="button" id="cancel-prod-btn" class="btn-secondary hidden">Batal Edit</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- TABEL & FILTER PRODUK -->
+                    <div class="card-box">
+                        <div class="box-header">
+                            <h3>Daftar Produk (<span id="prod-count-text">0</span>)</h3>
+                            <div class="filter-controls">
+                                <input type="text" id="admin-prod-search" placeholder="Cari produk..." class="search-input-sm">
+                                <select id="admin-prod-cat-filter" class="select-sm">
+                                    <option value="ALL">Semua Kategori</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Foto</th>
+                                        <th>Produk</th>
+                                        <th>Harga</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="product-table-body">
+                                    <tr><td colspan="5" class="text-center">Memuat data produk...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- TAB 2: KELOLA KATEGORI -->
+            <section id="tab-categories" class="tab-content">
+                <div class="content-grid">
+                    
+                    <!-- FORM KATEGORI -->
+                    <div class="card-box">
+                        <h3 id="cat-form-title">Tambah Kategori Baru</h3>
+                        <form id="category-form">
+                            <input type="hidden" id="cat-id">
+
+                            <div class="form-group">
+                                <label for="cat-name">Nama Kategori *</label>
+                                <input type="text" id="cat-name" placeholder="Contoh: Skincare" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cat-sort">Urutan Tampil (Sort Order) *</label>
+                                <input type="number" id="cat-sort" value="1" min="1" required>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" id="save-cat-btn" class="btn-primary">Simpan Kategori</button>
+                                <button type="button" id="cancel-cat-btn" class="btn-secondary hidden">Batal Edit</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- LIST KATEGORI -->
+                    <div class="card-box">
+                        <h3>Daftar Kategori</h3>
+                        <ul id="category-list" class="category-tree-list">
+                            <li class="text-center">Memuat kategori...</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- TAB 3: PENGATURAN BRAND -->
+            <section id="tab-settings" class="tab-content">
+                <div class="card-box" style="max-width: 500px; margin: 0 auto;">
+                    <h3>Pengaturan Brand & Identitas Situs</h3>
+                    <form id="settings-form">
+                        <div class="form-group">
+                            <label for="set-brand-name">Nama Brand / Website *</label>
+                            <input type="text" id="set-brand-name" placeholder="Yana Affiliate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="set-tagline">Tagline Situs</label>
+                            <input type="text" id="set-tagline" placeholder="Katalog Produk Pilihan">
+                        </div>
+
+                        <!-- OPSI UPLOAD LOGO BRAND (FILE / LINK) -->
+                        <div class="form-group">
+                            <label for="set-logo-file">Upload Logo Brand</label>
+                            <input type="file" id="set-logo-file" accept="image/*" class="form-control">
+                            <small class="help-text">Pilih logo dari galeri HP atau masukkan URL gambar di bawah.</small>
+                            
+                            <div style="margin-top: 8px;">
+                                <label for="set-logo-url" style="font-size: 0.85rem;">Atau Tempelkan URL Logo Direct:</label>
+                                <input type="url" id="set-logo-url" placeholder="https://domain.com/logo.png">
+                            </div>
+
+                            <div id="settings-upload-status" class="help-text hidden" style="color: #fe2c55; font-weight: 500; margin-top: 5px;"></div>
+                            
+                            <div id="setting-logo-preview-box" class="preview-box hidden" style="margin-top: 10px;">
+                                <img id="setting-logo-preview" src="" alt="Preview Logo" referrerpolicy="no-referrer">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="set-logo-width">Lebar Logo (px)</label>
+                                <input type="number" id="set-logo-width" value="28" min="16" max="200">
+                            </div>
+                            <div class="form-group">
+                                <label for="set-logo-pos">Posisi Logo</label>
+                                <select id="set-logo-pos">
+                                    <option value="left">Kiri</option>
+                                    <option value="center">Tengah</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" id="save-settings-btn" class="btn-primary">Simpan Pengaturan</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODAL CONFIRMATION DELETE CATEGORY (RELATION CHECK) -->
+    <div id="cat-delete-modal" class="modal-backdrop hidden" aria-hidden="true">
+        <div class="modal-dialog">
+            <h3>Peringatan Penghapusan Kategori</h3>
+            <p id="cat-delete-warning-text"></p>
+
+            <div id="reassign-container" class="form-group hidden" style="margin-top: 12px;">
+                <label for="target-reassign-cat">Pindahkan Produk Terikat Ke:</label>
+                <select id="target-reassign-cat">
+                    <!-- Dynamic categories -->
+                </select>
+            </div>
+
+            <div class="modal-actions" style="margin-top: 16px;">
+                <button type="button" id="confirm-del-cat-btn" class="btn-danger">Hapus Kategori</button>
+                <button type="button" id="close-del-cat-btn" class="btn-secondary">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ENTRY POINT JS MODULES -->
+    <script type="module" src="js/admin-auth.js"></script>
+    <script type="module" src="js/admin-products.js"></script>
+    <script type="module" src="js/admin-categories.js"></script>
+    <script type="module" src="js/admin-settings.js"></script>
+</body>
+</html>

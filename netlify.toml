@@ -1,0 +1,24 @@
+[build]
+  publish = "."
+
+# Rewrite URL cantik untuk admin
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+
+# Rewrite URL detail produk jika menggunakan query parameter/slug clean
+[[redirects]]
+  from = "/p/*"
+  to = "/product.html?slug=:splat"
+  status = 200
+
+# Security Headers (Kompatibel dengan Firebase CDN & Storage)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer-when-downgrade"
+    Content-Security-Policy = "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';"
